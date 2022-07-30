@@ -53,13 +53,13 @@ class InvertedIndexDictionary:
 
         for record in root:
             counter_dict_for_doc = {}
-            paper_num = record.find("PAPERNUM")
+            record_num = record.find("RECORDNUM")
             len_of_doc, words = self.get_tokenized_words_from_record(record)
-            doc_len_dict_for_file[paper_num.text] = len_of_doc
+            doc_len_dict_for_file[record_num.text] = len_of_doc
             term_freq_dict_for_doc = Counter(words)
 
             for word, count in term_freq_dict_for_doc.items():
-                counter_dict_for_doc[word] = (paper_num.text, count)
+                counter_dict_for_doc[word] = (record_num.text, count)
             self.merge_two_freq_dicts(counter_dict_for_file, counter_dict_for_doc)
 
         return count_of_docs_in_file, counter_dict_for_file, doc_len_dict_for_file
