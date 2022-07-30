@@ -1,6 +1,5 @@
 import math
 import xml.etree.ElementTree as ET
-
 import nltk
 from nltk import RegexpTokenizer
 from nltk.corpus import stopwords
@@ -18,13 +17,12 @@ class InvertedIndexDictionary:
         self.path_to_xml_dir = path_to_xml_dir
         self.dict = {}
         try:
-            stop_words = set(stopwords.words("english"))
+            self.stop_words = set(stopwords.words("english"))
         except:
             nltk.download('stopwords')
-            stop_words = set(stopwords.words("english"))
+            self.stop_words = set(stopwords.words("english"))
 
-        self.words_to_stop = set(stopwords.words('english'))
-        self.words_to_stop.add("\n")
+        self.stop_words.add("\n")
         self.count_of_docs = 0
 
     def build_inverted_index(self):
@@ -35,7 +33,7 @@ class InvertedIndexDictionary:
         for file in files_list:
             count_of_docs_in_file, counter_dict_for_file, doc_len_dict_for_file = self.get_inverted_index_of_file(file)
             self.count_of_docs += count_of_docs_in_file
-            self.merge_two_freq_dicts(term_frequency, counter_dict_for_file)
+            self.merge_two_dicts(term_frequency, counter_dict_for_file)
             len_by_doc_name.update(doc_len_dict_for_file)
 
         for word in term_frequency:
@@ -59,8 +57,8 @@ class InvertedIndexDictionary:
             term_freq_dict_for_doc = Counter(words)
 
             for word, count in term_freq_dict_for_doc.items():
-                counter_dict_for_doc[word] = [record_num.text, count]
-            self.merge_counter_dict_into_freq_dict(counter_dict_for_file, counter_dict_for_doc)
+                counter_dict_for_doc[word] = {record_num.text: count}
+            self.merge_two_dicts(counter_dict_for_file, counter_dict_for_doc)
 
         return count_of_docs_in_file, counter_dict_for_file, doc_len_dict_for_file
 
@@ -84,32 +82,23 @@ class InvertedIndexDictionary:
         porter_stemmer = PorterStemmer()
 
         words = tokenizer.tokenize(text.lower())
-        filtered_words = [word for word in words if not word in self.words_to_stop]
+        filtered_words = [porter_stemmer.stem(word) for word in words if not word in self.stop_words]
 
         return len(words), filtered_words
 
     @staticmethod
-    def merge_two_freq_dicts(dict1, dict2):
+    def merge_two_dicts(dict1, dict2):
         for word in dict2:
             if word in dict1:
-                dict1[word] += dict2[word]
+                dict1[word] = dict1[word] | dict2[word]
             else:
                 dict1[word] = dict2[word]
-
-    @staticmethod
-    def merge_counter_dict_into_freq_dict(dict1, dict2):
-        for word in dict2:
-            if word in dict1:
-                dict1[word].append(dict2[word])
-            else:
-                dict1[word] = [dict2[word]]
 
     def save_data_to_files(self, path=""):
         with open(path + OUTPUT_FILE, "w") as outfile:
             json.dump(self.dict, outfile)
 
-    def load_data_from_files(self, path=""):
+    @staticmethod
+    def load_data_from_files(path=""):
         with open(path + OUTPUT_FILE) as json_file:
-            dict = json.load(json_file)
-
-        return dict
+            return json.load(json_file)
