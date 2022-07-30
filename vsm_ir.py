@@ -10,13 +10,10 @@ def create_index():
     inverted_index = InvertedIndexDictionary(input_files_path)
     inverted_index.build_inverted_index()
     inverted_index.save_data_to_files()
-    dict = InvertedIndexDictionary.load_data_from_files()
-    print("love me love me")
-
 
 def query():
-    pass
-    # TODO: hadar implements this
+    dict = InvertedIndexDictionary.load_data_from_files()
+    print("love me love me")
 
 
 if __name__ == '__main__':
@@ -26,5 +23,5 @@ if __name__ == '__main__':
             reference.create_index()
         else:
             create_index()
-    if sys.argv[2] == "query":
+    if sys.argv[1] == "query":
         query()

@@ -28,7 +28,8 @@ class InvertedIndexDictionary:
     def build_inverted_index(self):
         files_list = [file for file in os.listdir(self.path_to_xml_dir) if file.endswith(".xml")]
         term_frequency = {}
-        log_inverted_document_frequency = {}
+        normal_idf = {}
+        bm25_idf = {}
         len_by_doc_name = {}
         for file in files_list:
             count_of_docs_in_file, counter_dict_for_file, doc_len_dict_for_file = self.get_inverted_index_of_file(file)
@@ -37,9 +38,10 @@ class InvertedIndexDictionary:
             len_by_doc_name.update(doc_len_dict_for_file)
 
         for word in term_frequency:
-            log_inverted_document_frequency[word] = math.log2(self.count_of_docs / len(term_frequency[word]))
+            normal_idf[word] = math.log2(self.count_of_docs / len(term_frequency[word]))
+            bm25_idf[word] = self.get_bm25_idf(len(term_frequency[word]))
 
-        self.dict = {"TF": term_frequency, "len_by_doc_name": len_by_doc_name, "IDF": log_inverted_document_frequency}
+        self.dict = {"TF": term_frequency, "len_by_doc_name": len_by_doc_name, "normal_IDF": normal_idf, "BM25_IDF": bm25_idf}
 
     # returns a dictionary containing word and their frequencies in file (takes words from title and
     def get_inverted_index_of_file(self, file):
@@ -102,3 +104,7 @@ class InvertedIndexDictionary:
     def load_data_from_files(path=""):
         with open(path + OUTPUT_FILE) as json_file:
             return json.load(json_file)
+
+    def get_bm25_idf(self, n_word):  # n_word is the number of documents in which "word" appears
+        N = self.count_of_docs
+        return math.log(((N - n_word + 0.5) / (n_word + 0.5)) + 1)
