@@ -59,8 +59,8 @@ class InvertedIndexDictionary:
             term_freq_dict_for_doc = Counter(words)
 
             for word, count in term_freq_dict_for_doc.items():
-                counter_dict_for_doc[word] = (record_num.text, count)
-            self.merge_two_freq_dicts(counter_dict_for_file, counter_dict_for_doc)
+                counter_dict_for_doc[word] = [record_num.text, count]
+            self.merge_counter_dict_into_freq_dict(counter_dict_for_file, counter_dict_for_doc)
 
         return count_of_docs_in_file, counter_dict_for_file, doc_len_dict_for_file
 
@@ -88,7 +88,6 @@ class InvertedIndexDictionary:
 
         return len(words), filtered_words
 
-
     @staticmethod
     def merge_two_freq_dicts(dict1, dict2):
         for word in dict2:
@@ -96,6 +95,14 @@ class InvertedIndexDictionary:
                 dict1[word] += dict2[word]
             else:
                 dict1[word] = dict2[word]
+
+    @staticmethod
+    def merge_counter_dict_into_freq_dict(dict1, dict2):
+        for word in dict2:
+            if word in dict1:
+                dict1[word].append(dict2[word])
+            else:
+                dict1[word] = [dict2[word]]
 
     def save_data_to_files(self, path=""):
         with open(path + OUTPUT_FILE, "w") as outfile:
