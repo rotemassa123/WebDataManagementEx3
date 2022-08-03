@@ -8,8 +8,7 @@ from collections import Counter
 import json
 from nltk.stem import PorterStemmer
 
-OUTPUT_FILE = "output.json"
-
+OUTPUT_FILE = "vsm_inverted_index.json"
 
 class InvertedIndexDictionary:
 
@@ -61,6 +60,8 @@ class InvertedIndexDictionary:
 
             for word, count in term_freq_dict_for_doc.items():
                 counter_dict_for_doc[word] = {record_num.text: count/most_freq_term}
+                if(counter_dict_for_doc[word] == None):
+                    print("yes")
             self.merge_two_dicts(counter_dict_for_file, counter_dict_for_doc)
 
         return count_of_docs_in_file, counter_dict_for_file, doc_len_dict_for_file
@@ -93,7 +94,7 @@ class InvertedIndexDictionary:
     def merge_two_dicts(dict1, dict2):
         for word in dict2:
             if word in dict1:
-                dict1[word] = dict1[word] | dict2[word]
+                dict1[word].update(dict2[word])
             else:
                 dict1[word] = dict2[word]
 
