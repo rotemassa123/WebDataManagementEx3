@@ -1,7 +1,5 @@
 import sys
-from collections import Counter
-
-import reference
+from InformationRetrievalGivenQuery import ret_info
 from InvertedIndexDictionary import InvertedIndexDictionary
 
 
@@ -12,8 +10,8 @@ def create_index():
     inverted_index.save_data_to_files()
 
 def query():
-    pass
-    #TODO: hadar implements!
+    dic = InvertedIndexDictionary.load_data_from_files()
+    ret_info(dic)
 
 
 if __name__ == '__main__':

@@ -53,6 +53,8 @@ class InvertedIndexDictionary:
         for record in root:
             counter_dict_for_doc = {}
             record_num = record.find("RECORDNUM")
+            if record_num == None:
+                continue
             len_of_doc, words = self.get_tokenized_words_from_record(record)
             doc_len_dict_for_file[record_num.text] = len_of_doc
             term_freq_dict_for_doc = Counter(words)
