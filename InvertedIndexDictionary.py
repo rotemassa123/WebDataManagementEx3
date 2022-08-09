@@ -62,8 +62,6 @@ class InvertedIndexDictionary:
 
             for word, count in term_freq_dict_for_doc.items():
                 counter_dict_for_doc[word] = {record_num.text: count/most_freq_term}
-                if(counter_dict_for_doc[word] == None):
-                    print("yes")
             self.merge_two_dicts(counter_dict_for_file, counter_dict_for_doc)
 
         return count_of_docs_in_file, counter_dict_for_file, doc_len_dict_for_file
